@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>M3U8 Player</title>
+  <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #02422B;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+    }
+
+    .category {
+      font-size: 1em;
+      font-weight: bold;
+      margin: 20px auto;
+      text-align: left;
+      padding: 10px;
+      border-bottom: 2px solid #fff;
+      background-color: #03006c;
+      width: 90%;
+    }
+
+    .channel-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .channel {
+      cursor: pointer;
+      text-align: center;
+      background: #03006c;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      position: relative;
+    }
+
+    .channel img {
+      width: 230px;
+      height: 90px;
+      border-radius: 10px;
+      border: 2px solid #ff9900;
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 3px 8px;
+      border-radius: 5px;
+      color: white;
+    }
+
+    .status-live { background-color: red; }
+    .status-offline { background-color: blue; }
+    .status-time { background-color: green; }
+
+    .player-modal {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #030237;
+      z-index: 1000;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 10px;
+      background-color: red;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .player-wrapper {
+      position: relative;
+      width: 90%;
+      max-width: 1000px;
+      aspect-ratio: 16/9;
+      border-radius: 10px;
+      border: 2px solid #ffffff;
+      overflow: hidden;
+    }
+
+    #m3u8Player {
+      width: 100%;
+      height: 100%;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 80px;
+      opacity: 100;
+      z-index: 1000;
+      border-radius: 5px;
+    }
+
+    .loader-wrapper {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      z-index: 1001;
+    }
+
+    .loader {
+      width: 100px;
+      height: 100px;
+      border: 10px solid transparent;
+      border-top-color: #03006c;
+      border-bottom-color: #fff;
+      border-radius: 50%;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+      .button-container {
+      padding: 35px;
+    }
+    .button-container h2{
+      float: left;
+    }
+
+    .nbc-button {
+      float: right;
+      background-color: #007bff;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+
+    .nbc-button:hover {
+      background-color: #0056b3;
+    
+  </style>
+</head>
+<body>
+
+  
+  
+    <div class="button-container"><h2>SokaNet</h2>
+    <a href="go:nbc" class="nbc-button">NBC League</a>
+  </div>
+  
+
+  <div class="player-modal" id="videoModal">
+    <button class="close-btn" onclick="closePlayer()">X</button>
+    <div class="player-wrapper">
+      <video id="m3u8Player" class="video-js vjs-default-skin" controls preload="auto"></video>
+      <img src="https://i.ibb.co/b5crvg0Q/QDISHTV.png" alt="Watermark" class="watermark" />
+    </div>
+  </div>
+
+  <div id="mainLoader" class="loader-wrapper">
+    <div class="loader"></div>
+  </div>
+
+  <div id="channelContainer"></div>
+
+  <script src="https://vjs.zencdn.net/8.0.4/video.min.js"></script>
+  <script>
+    const SHEET_ID = "1GjZiv_kDhWBdVbncgxKBm7G13k3P41l48ij0qs5V350";
+    const API_KEY = "AIzaSyAKxhIT1BTZrx3_QoJ575v7pUZfsZqjwR8";
+    const SHEET_NAME = "Sheet1";
+    const REFRESH_INTERVAL = 5000;
+
+    const videoPlayer = videojs("m3u8Player");
+
+    function closePlayer() {
+      document.getElementById("videoModal").style.display = "none";
+      videoPlayer.pause();
+      videoPlayer.reset();
+    }
+
+    let firstLoad = true;
+
+    function fetchChannels() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+
+      if (firstLoad) {
+        document.getElementById("mainLoader").style.display = "flex";
+      }
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          const rows = data.values;
+          const channelContainer = document.getElementById("channelContainer");
+          channelContainer.innerHTML = "";
+          const categories = {};
+
+          rows.slice(1).forEach(row => {
+            const [name, image, link, category, status] = row;
+            if (!categories[category]) categories[category] = [];
+            categories[category].push({ name, image, link, status });
+          });
+
+          for (const category in categories) {
+            const categoryDiv = document.createElement("div");
+            categoryDiv.innerHTML = `<div class='category'>${category}</div>`;
+            channelContainer.appendChild(categoryDiv);
+
+            const channelList = document.createElement("div");
+            channelList.className = "channel-list";
+
+            categories[category].forEach(({ name, image, link, status }) => {
+              const div = document.createElement("div");
+              div.className = "channel";
+
+              let badgeClass = "", badgeText = "";
+              if (status) {
+                if (status.toLowerCase() === "live") {
+                  badgeClass = "status-live"; badgeText = "LIVE";
+                } else if (status.toLowerCase() === "offline") {
+                  badgeClass = "status-offline"; badgeText = "OFFLINE";
+                } else {
+                  badgeClass = "status-time"; badgeText = status;
+                }
+              }
+
+              div.innerHTML = `
+                <div class="status-badge ${badgeClass}">${badgeText}</div>
+                <img src="${image}" alt="${name}"><br>${name}
+              `;
+
+              div.onclick = () => {
+                if (status.toLowerCase() !== "offline") {
+                  document.getElementById("videoModal").style.display = "flex";
+                  document.getElementById("mainLoader").style.display = "block";
+                  videoPlayer.src({ src: link, type: "application/x-mpegURL" });
+                  videoPlayer.play();
+                  videoPlayer.on("loadeddata", () => {
+                    document.getElementById("mainLoader").style.display = "none";
+                  });
+                } else {
+                  alert("Channel is currently offline.");
+                }
+              };
+
+              channelList.appendChild(div);
+            });
+
+            channelContainer.appendChild(channelList);
+          }
+        })
+        .catch(err => {
+          console.error("Error loading channels:", err);
+        })
+        .finally(() => {
+          document.getElementById("mainLoader").style.display = "none";
+          firstLoad = false;
+        });
+    }
+
+    fetchChannels();
+    setInterval(fetchChannels, REFRESH_INTERVAL);
+  </script>
+</body>
+</html>
