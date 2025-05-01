@@ -84,11 +84,7 @@
 
       player.ready(() => {
         player.src({ type: "application/x-mpegURL", src: url });
-        // Attempt to play
-        player.play().catch((error) => {
-          console.warn("Autoplay with sound failed:", error);
-          alert("Click the video to start playing with sound.");
-        });
+        player.play();
       });
     } else {
       document.getElementById("channelName").textContent = "Invalid channel URL";
