@@ -61,7 +61,6 @@
       class="video-js vjs-default-skin"
       controls
       autoplay
-      muted
       playsinline
       preload="auto"
     >
@@ -82,9 +81,14 @@
       document.getElementById("videoSource").src = url;
       document.getElementById("channelName").textContent = name;
       const player = videojs("my-video");
+
       player.ready(() => {
         player.src({ type: "application/x-mpegURL", src: url });
-        player.play();
+        // Attempt to play
+        player.play().catch((error) => {
+          console.warn("Autoplay with sound failed:", error);
+          alert("Click the video to start playing with sound.");
+        });
       });
     } else {
       document.getElementById("channelName").textContent = "Invalid channel URL";
