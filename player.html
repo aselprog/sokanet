@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Player</title>
+  <title>SokaNet</title>
   <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
   <style>
     body {
-      background-color: #000;
+      background-color: #02422B;
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
@@ -37,6 +37,13 @@
       width: 100% !important;
       height: 100% !important;
     }
+    .video-wrapper{
+      border: 0.5px solid;
+      border-radius: 9px;
+    }
+    #my-video{
+      border-radius: 9px;
+    }
 
     .back-button {
       margin: 15px;
@@ -55,7 +62,14 @@
   <div class="header" id="channelName">Loading...</div>
 
   <div class="video-wrapper">
-    <video id="my-video" class="video-js vjs-default-skin" controls autoplay preload="auto">
+    <video
+      id="my-video"
+      class="video-js vjs-default-skin"
+      controls
+      autoplay
+      playsinline
+      preload="auto"
+    >
       <source id="videoSource" src="" type="application/x-mpegURL" />
       Your browser does not support the video tag.
     </video>
@@ -73,7 +87,14 @@
       document.getElementById("videoSource").src = url;
       document.getElementById("channelName").textContent = name;
       const player = videojs("my-video");
-      player.src({ type: "application/x-mpegURL", src: url });
+
+      player.ready(() => {
+        player.src({ type: "application/x-mpegURL", src: url });
+        player.play().catch((e) => {
+          console.warn("Autoplay failed:", e);
+          alert("Bonyeza play kuanza video.");
+        });
+      });
     } else {
       document.getElementById("channelName").textContent = "Invalid channel URL";
     }
