@@ -87,39 +87,31 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
-    .button-container {
-      padding: 35px;
+    .button-container img{
+      width: 20px;
+      animation: rotate 2s infinite linear;
+      border: solid yellow;
+      border-radius: 9px;
     }
+    @keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
-    .button-container h2 {
-      float: left;
-    }
 
-    .nbc-button {
-      float: right;
-      background-color: #007bff;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      font-weight: bold;
-    }
-
-    .nbc-button:hover {
-      background-color: #0056b3;
-    }
   </style>
 </head>
 <body>
 
   <div class="button-container">
-    <h2>SokaNet</h2>
+    <h2> <img src="https://fv5-4.files.fm/thumb.php?i=hvpp5pn5fc&v=1&n=icon.png"> SokaNet</h2>
   </div>
 
   <div id="mainLoader" class="loader-wrapper">
