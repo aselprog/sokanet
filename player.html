@@ -78,9 +78,10 @@
       id="m3u8Player"
       class="video-js vjs-default-skin"
       controls
-      preload="auto"
+      autoplay
       playsinline
       webkit-playsinline
+      preload="auto"
       data-setup="{}">
       <source id="videoSource" src="" type="application/x-mpegURL">
       Your browser does not support the video tag.
@@ -106,6 +107,9 @@
       const player = videojs("m3u8Player");
       player.ready(() => {
         player.src({ type: "application/x-mpegURL", src: url });
+        player.play().catch((e) => {
+          console.warn("Autoplay failed:", e);
+        });
       });
     } else {
       channelName.textContent = "Invalid or Missing Channel Info";
