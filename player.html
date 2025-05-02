@@ -147,5 +147,68 @@
       channelName.textContent = "Invalid or Missing Channel Info";
     }
   </script>
+
+  <script id="wpcp_disable_selection" type="text/javascript">
+    //<![CDATA[
+    var image_save_msg = 'You Cannot Save Images!';
+    var no_menu_msg = 'Context Menu Disabled!';
+    var smessage = "Content is Protected!";
+    
+    function disableKeyCombinations(e) {
+        if (e.ctrlKey || e.keyCode === 123) { // 123 is F12
+            var key = e.which || e.keyCode;
+            if ([65, 67, 88, 86, 85, 83, 73, 74].includes(key)) { // Includes S, U, I, J
+                alert('You are not allowed to copy content, save, or inspect.');
+                e.preventDefault();
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    document.onkeydown = disableKeyCombinations;
+    
+    document.addEventListener('copy', function(e) {
+        alert(smessage);
+        e.preventDefault();
+    });
+    
+    document.addEventListener('contextmenu', function(e) {
+        alert(no_menu_msg);
+        e.preventDefault();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.keyCode === 123) { // F12
+            alert('Developer tools are disabled!');
+            e.preventDefault();
+        }
+        if ((e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+            (e.ctrlKey && e.shiftKey && e.keyCode === 74)) { // Ctrl+Shift+J
+            alert('Developer tools are disabled!');
+            e.preventDefault();
+        }
+    });
+    
+    window.onload = function() {
+        document.body.setAttribute('onselectstart', 'return false');
+        document.body.style.userSelect = 'none';
+    };
+    //]]>
+    </script>
+    
+    <style>
+    html, body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    </style>
+    
+
+    </script>
 </body>
 </html>
