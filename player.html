@@ -32,6 +32,7 @@
       justify-content: center;
       align-items: center;
       padding: 0;
+      position: relative;
     }
 
     .video-js {
@@ -40,6 +41,16 @@
       height: auto !important;
       aspect-ratio: 16 / 9;
       background-color: black;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 100px;
+      opacity: 100;
+      z-index: 100;
+      border-radius: 5px;
     }
 
     .channel-name {
@@ -72,6 +83,9 @@
 
   <!-- VIDEO PLAYER -->
   <div class="player-container">
+    <!-- Watermark Logo -->
+    <img src="https://i.ibb.co/8gkk3FKp/sokatv.png" alt="Watermark" class="watermark" />
+
     <video
       id="m3u8Player"
       class="video-js vjs-default-skin"
