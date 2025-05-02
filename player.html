@@ -7,13 +7,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <title>SokaNet Player</title>
 
-  <!-- Video.js CSS -->
   <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
       padding: 0;
@@ -25,7 +20,44 @@
       min-height: 100vh;
     }
 
-    .header {
+    .player-container {
+      position: relative;
+      width: 100%;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .video-js {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16 / 9;
+      background-color: black;
+    }
+
+    .overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .play-button {
+      background-color: #007bff;
+      color: white;
+      font-size: 20px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .channel-name {
       background-color: #03006c;
       padding: 15px;
       text-align: center;
@@ -33,29 +65,11 @@
       font-weight: bold;
     }
 
-    .player-container {
-      flex: 1;
-      background-color: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-    }
-
-    .video-js {
-      width: 100% !important;
-      max-width: 100%;
-      height: auto !important;
-      aspect-ratio: 16 / 9;
-      border-radius: 10px;
-      background-color: black;
-    }
-
     .back-button {
       background-color: #007bff;
       color: white;
       padding: 10px 20px;
-      margin: 15px auto;
+      margin: 20px auto;
       text-decoration: none;
       font-weight: bold;
       border-radius: 6px;
@@ -71,14 +85,12 @@
 </head>
 <body>
 
-  <div class="header" id="channelName">Loading...</div>
-
+  <!-- VIDEO PLAYER -->
   <div class="player-container">
     <video
       id="m3u8Player"
       class="video-js vjs-default-skin"
       controls
-      autoplay
       playsinline
       webkit-playsinline
       preload="auto"
@@ -86,8 +98,17 @@
       <source id="videoSource" src="" type="application/x-mpegURL">
       Your browser does not support the video tag.
     </video>
+
+    <!-- OVERLAY FOR PLAY BUTTON -->
+    <div id="overlay" class="overlay">
+      <button class="play-button" onclick="startPlayback()">▶ Gusa kuanza</button>
+    </div>
   </div>
 
+  <!-- CHANNEL NAME -->
+  <div class="channel-name" id="channelName">Loading...</div>
+
+  <!-- BACK BUTTON -->
   <a class="back-button" href="index.html">⟵ Back to Home</a>
 
   <!-- Video.js Script -->
@@ -99,20 +120,24 @@
 
     const source = document.getElementById("videoSource");
     const channelName = document.getElementById("channelName");
+    const overlay = document.getElementById("overlay");
 
     if (url && name) {
       source.src = url;
       channelName.textContent = decodeURIComponent(name);
-
-      const player = videojs("m3u8Player");
-      player.ready(() => {
-        player.src({ type: "application/x-mpegURL", src: url });
-        player.play().catch((e) => {
-          console.warn("Autoplay failed:", e);
-        });
-      });
     } else {
       channelName.textContent = "Invalid or Missing Channel Info";
+    }
+
+    const player = videojs("m3u8Player");
+
+    function startPlayback() {
+      overlay.style.display = "none";
+      player.src({ type: "application/x-mpegURL", src: url });
+      player.play().catch(e => {
+        alert("Imeshindikana kuplay video. Jaribu tena.");
+        console.error("Play error:", e);
+      });
     }
   </script>
 </body>
