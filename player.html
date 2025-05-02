@@ -2,15 +2,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SokaNet</title>
-  <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SokaNet Player</title>
+  <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
   <style>
     body {
-      background-color: #02422B;
       margin: 0;
       padding: 0;
+      background-color: #02422B;
       font-family: Arial, sans-serif;
       color: white;
     }
@@ -23,25 +23,16 @@
       font-weight: bold;
     }
 
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
-      background-color: black;
-      border: 0.5px solid;
-    }
-
-    .video-js {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100% !important;
-      height: 100% !important;
+    .player-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 100px); /* 100px for header + back button */
     }
 
     .back-button {
-      margin: 15px;
       display: inline-block;
+      margin: 10px 20px;
       background-color: #007bff;
       color: white;
       padding: 10px 20px;
@@ -49,22 +40,28 @@
       text-decoration: none;
       font-weight: bold;
     }
+
+    .video-js {
+      width: 100%;
+      max-width: 960px;
+      height: auto;
+    }
   </style>
 </head>
 <body>
 
   <div class="header" id="channelName">Loading...</div>
 
-  <div class="video-wrapper">
+  <div class="player-container">
     <video
-      id="my-video"
+      id="m3u8Player"
       class="video-js vjs-default-skin"
       controls
       autoplay
-      playsinline
       preload="auto"
-    >
-      <source id="videoSource" src="" type="application/x-mpegURL" />
+      playsinline
+      data-setup="{}">
+      <source id="videoSource" src="" type="application/x-mpegURL">
       Your browser does not support the video tag.
     </video>
   </div>
@@ -80,14 +77,14 @@
     if (url && name) {
       document.getElementById("videoSource").src = url;
       document.getElementById("channelName").textContent = name;
-      const player = videojs("my-video");
 
+      const player = videojs("m3u8Player");
       player.ready(() => {
         player.src({ type: "application/x-mpegURL", src: url });
         player.play();
       });
     } else {
-      document.getElementById("channelName").textContent = "Invalid channel URL";
+      document.getElementById("channelName").textContent = "Invalid or Missing Channel";
     }
   </script>
 </body>
