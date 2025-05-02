@@ -77,6 +77,13 @@
     .back-button:hover {
       background-color: #0056b3;
     }
+
+    /* Customize error message */
+    .vjs-error .vjs-error-display .vjs-modal-dialog-content {
+      font-size: 24px;
+      color: rgb(255, 255, 255);
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -126,6 +133,14 @@
         player.src({ type: "application/x-mpegURL", src: url });
         player.play().catch((e) => {
           console.warn("Autoplay failed:", e);
+        });
+
+        // Override default error message
+        player.on('error', function () {
+          const errorDisplay = player.errorDisplay;
+          if (errorDisplay && errorDisplay.contentEl()) {
+            errorDisplay.contentEl().innerHTML = "OFFLINE NOW";
+          }
         });
       });
     } else {
