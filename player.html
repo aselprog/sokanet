@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>SokaNet Player</title>
+
   <!-- Video.js CSS -->
   <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
   <style>
@@ -32,6 +35,7 @@
 
     .player-container {
       flex: 1;
+      background-color: black;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -39,12 +43,12 @@
     }
 
     .video-js {
-      width: 100%;
-      max-width: 960px;
-      aspect-ratio: 16/9;
+      width: 100% !important;
+      max-width: 100%;
+      height: auto !important;
+      aspect-ratio: 16 / 9;
       border-radius: 10px;
-      border: 0.5px solid;
-      box-shadow: 0 0 10px rgba(0,0,0,0.6);
+      background-color: black;
     }
 
     .back-button {
@@ -74,8 +78,9 @@
       id="m3u8Player"
       class="video-js vjs-default-skin"
       controls
-      playsinline
       preload="auto"
+      playsinline
+      webkit-playsinline
       data-setup="{}">
       <source id="videoSource" src="" type="application/x-mpegURL">
       Your browser does not support the video tag.
@@ -96,7 +101,7 @@
 
     if (url && name) {
       source.src = url;
-      channelName.textContent = name;
+      channelName.textContent = decodeURIComponent(name);
 
       const player = videojs("m3u8Player");
       player.ready(() => {
